@@ -15,7 +15,7 @@ public class WireMockConfig {
 	public WireMockServer wireMockServer() {
 		WireMockServer server = new WireMockServer(
 	            WireMockConfiguration.wireMockConfig()
-                .dynamicPort()
+                .port(56789)
                 .usingFilesUnderClasspath("wiremock")
         );
 		
