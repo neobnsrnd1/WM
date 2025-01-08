@@ -1,0 +1,9 @@
+[
+  {
+    "postId": 1,
+    "id": 1,
+    "name": "Mocked Commenter",
+    "email": "mocked@example.com",
+    "body": "This is a mocked comment."
+  }
+]

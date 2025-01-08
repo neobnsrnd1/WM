@@ -1,0 +1,16 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/mock/api/9"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "api-9-response.json",
+    "headers": {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization"
+    }
+  }
+}

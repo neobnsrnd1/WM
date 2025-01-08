@@ -1,0 +1,122 @@
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+th, td {
+    text-align: center;
+    vertical-align: middle;
+}
+th {
+    background-color: #f8f9fa;
+}
+.btn-sm {
+    padding: 5px 10px;
+}
+.btn-execute {
+    background-color: #007bff;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.btn-execute:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+.btn-execute:active {
+    background-color: #003f7f;
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.triangle {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 10px 0 10px 16px;
+    border-color: transparent transparent transparent white;
+}
+.btn-common {
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.btn-common:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+.btn-common:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.btn-api-mock {
+    background-color: #6c757d;
+}
+.btn-api-mock:hover {
+    background-color: #5a6268;
+}
+.btn-api-mock:active {
+    background-color: #4e555b;
+}
+.btn-api-real {
+    background-color: #007bff;
+}
+.btn-api-real:hover {
+    background-color: #0056b3;
+}
+.btn-api-real:active {
+    background-color: #003f7f;
+}
+.btn-healthcheck {
+    background-color: #343a40;
+}
+.btn-healthcheck:hover {
+    background-color: #23272b;
+}
+.btn-healthcheck:active {
+    background-color: #1d2124;
+}
+.btn-toggle-mode {
+    background-color: #495057;
+}
+.btn-toggle-mode:hover {
+    background-color: #343a40;
+}
+.btn-toggle-mode:active {
+    background-color: #23272b;
+}
+.badge-result,
+.badge-status {
+    display: inline-block;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    white-space: nowrap;
+}
+.badge-result-on {
+    background-color: #28a745;
+}
+.badge-result-off {
+    background-color: #dc3545;
+}
+.badge-status-real {
+    background-color: #28a745;
+}
+.badge-status-mock {
+    background-color: #dc3545;
+}

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neobns.wiremock_service.api.dao.ApiDao">
+
+    <!-- API 조회 -->
+    <!-- 1. 전체 -->
+    <select id="findAll" parameterType="ApiVO" resultType="ApiVO">
+        SELECT 
+        	id, api_name, api_url, last_checked_time, last_checked_status, response_status
+        FROM
+        	tb_api_list_m
+    </select>
+    
+    <!-- 2. 단일 -->
+    <select id="findById" parameterType="Integer" resultType="ApiVO">
+    	SELECT
+    		id, api_name, api_url, last_checked_time, last_checked_status, response_status
+    	FROM
+    		tb_api_list_m
+    	WHERE
+    		id = #{id} 
+    </select>
+    
+    <!-- 3. 멀티 -->
+    <select id="findByIds" parameterType="Integer" resultType="ApiVO">
+    	SELECT
+    		id, api_name, api_url, last_checked_time, last_checked_status, response_status 
+    	FROM 
+    		tb_api_list_m 
+    	WHERE 
+    		id 
+    	IN 
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <!-- 신규 API 저장 -->
+    <insert id="saveApi" parameterType="ApiVO" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO 
+        	tb_api_list_m (
+        		api_name
+        		, api_url
+        		)
+        VALUES (
+        		#{apiName}
+        		, #{apiUrl}
+        		)
+    </insert>
+
+    <!-- API 업데이트 -->
+    <!-- 1. 실서버 상태 -->
+    <update id="updateCheckedStatus" parameterType="ApiVO">
+        UPDATE 
+        	tb_api_list_m
+        SET
+            last_checked_time = #{lastCheckedTime}
+            , last_checked_status = #{lastCheckedStatus}
+        WHERE 
+        	id = #{id}
+    </update>
+    
+    <!-- 2.대응답 토글(단일) -->
+    <update id="toggleResponseStatusById" parameterType="Integer">
+    	UPDATE 
+    		tb_api_list_m 
+    	SET 
+    		response_status = NOT response_status 
+    	WHERE 
+    		id = #{id}
+    </update>
+    
+    <!-- 3. 대응답 토글(멀티) -->
+    <update id="toggleResponseStatusByIds" parameterType="Integer">
+        UPDATE 
+        	tb_api_list_m
+	    SET 
+	    	response_status = NOT response_status
+	    WHERE id IN
+	    <foreach collection="ids" item="id" open="(" separator="," close=")">
+	        #{id}
+	    </foreach>
+    </update>
+    
+    <!-- 4. 대응답 지정 -->
+    <update id="changeResponseStatusById" parameterType="ApiVO">
+    	UPDATE
+    		tb_api_list_m
+    	SET
+    		response_status = #{responseStatus}
+    	WHERE
+    		id = #{id}
+    </update>
+    
+    <!-- API 삭제 -->
+    <delete id="deleteById" parameterType="int">
+        DELETE FROM tb_api_list_m
+        WHERE id = #{id}
+    </delete>
+    
+</mapper>
