@@ -2,6 +2,7 @@ package com.neobns.wiremock_service.api.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import com.neobns.wiremock_service.api.vo.ApiVO;
 
@@ -18,4 +19,6 @@ public interface ApiService {
 	void checkAllApiHealthCheck();
 	
 	void deleteApi(int id);
+	void updateApi(int id, String apiName, String apiUrl, String apiMappings, String apiFiles);
+	Map<String, Object> loadApi(int id);
 }

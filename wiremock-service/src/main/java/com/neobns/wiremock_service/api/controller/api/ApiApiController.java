@@ -132,4 +132,32 @@ public class ApiApiController {
 		
 	}
 	
+	@PostMapping("/edit/{id}")
+	public ResponseEntity<String> editApi(@PathVariable int id, @RequestBody Map<String, String> apiData) {
+	    try {
+	        String apiName = apiData.get("apiName");
+	        String apiUrl = apiData.get("apiUrl");
+	        String apiMappings = apiData.get("apiMappings");
+	        String apiFiles = apiData.get("apiFiles");
+
+	        apiService.updateApi(id, apiName, apiUrl, apiMappings, apiFiles);
+
+	        return ResponseEntity.status(HttpStatus.OK).body("API successfully updated.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update API.");
+	    }
+	}
+	
+	@GetMapping("/get/{id}")
+	public ResponseEntity<Map<String, Object>> getApiById(@PathVariable int id) {
+	    Map<String, Object> loadApiInfo = apiService.loadApi(id);
+
+        if (loadApiInfo == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        return ResponseEntity.ok(loadApiInfo);
+	
+	}
 }

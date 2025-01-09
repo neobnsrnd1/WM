@@ -18,4 +18,5 @@ public interface ApiDao {
 	void toggleResponseStatusByIds(List<Integer> ids);
 	
 	void deleteById(int id);
+	void updateApi(ApiVO apiVO);
 }

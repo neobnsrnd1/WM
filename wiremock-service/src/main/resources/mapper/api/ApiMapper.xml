@@ -100,4 +100,12 @@
         WHERE id = #{id}
     </delete>
     
+    <update id="updateApi" parameterType="ApiVO">
+    	UPDATE
+    		tb_api_list_m
+    	SET
+    		api_name = #{apiName}, api_url = #{apiUrl}
+    	WHERE id = #{id}
+    </update>
+    
 </mapper>

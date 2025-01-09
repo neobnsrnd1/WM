@@ -9,6 +9,44 @@ document.addEventListener("DOMContentLoaded", function () {
         const apiAddModal = new bootstrap.Modal(document.getElementById("apiAddModal"));
         apiAddModal.show();
     });
+	
+	// "수정" 버튼 클릭 시 팝업 열기
+    const editButtons = document.querySelectorAll(".btn-edit");
+    editButtons.forEach(button => {
+        button.addEventListener("click", function () {
+            const apiEditModal = new bootstrap.Modal(document.getElementById("apiEditModal"));
+            
+            // API ID 가져오기
+            const apiId = button.getAttribute("data-id");
+
+            // API 데이터를 가져와 모달에 채우기
+            fetch(`/api/get/${apiId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("API 데이터를 가져오는 데 실패했습니다.");
+                    }
+                    return response.json();
+                })
+                .then(api => {
+                    // 모달 입력 필드에 데이터 설정
+                    document.getElementById("editApiName").value = api.apiName;
+                    document.getElementById("editApiUrl").value = api.apiUrl;
+                    document.getElementById("editApiMappings").value = api.apiMappings || "{}";
+                    document.getElementById("editApiFiles").value = api.apiFiles || "{}";
+
+                    // 모달 열기
+                    apiEditModal.show();
+
+                    // 저장 버튼 이벤트 설정
+                    document.getElementById("saveEditApiButton").onclick = () => saveEditApi(apiId);
+                })
+                .catch(error => {
+                    console.error("Error fetching API data:", error);
+                    alert("API 데이터를 가져오는 중 오류가 발생했습니다.");
+                });
+        });
+    });
+
 
     // "저장" 버튼 클릭 시 API 추가
     const saveApiButton = document.getElementById("saveApiButton");
@@ -149,6 +187,56 @@ const isValidJson = (input) => {
     } catch (error) {
         return false; // JSON 파싱 실패
     }
+};
+
+// API Edit
+const saveEditApi = (id) => {
+    let apiName = document.getElementById("editApiName").value;
+    let apiUrl = document.getElementById("editApiUrl").value;
+    let apiMappings = document.getElementById("editApiMappings").value;
+    let apiFiles = document.getElementById("editApiFiles").value;
+	
+	if (!isValidJson(apiMappings)) {
+		    alert("mappings 필드에 올바른 JSON 형식을 입력해주세요.");
+		    return;
+		}
+
+	if (!isValidJson(apiFiles)) {
+	    alert("__files 필드에 올바른 JSON 형식을 입력해주세요.");
+	    return;
+	}
+	
+	// 고정 값 정의
+    const fixedUrl = '"url": "/mock/api/{id}"';
+    const fixedBodyFileName = '"bodyFileName": "{apiName}-response.json"';
+	
+	// 고정 값 검증 및 복원
+    if (!apiMappings.includes(fixedUrl)) {
+        apiMappings = apiMappings.replace(/"url":\s*".*?"/, fixedUrl);
+    }
+    if (!apiMappings.includes(fixedBodyFileName)) {
+        apiMappings = apiMappings.replace(/"bodyFileName":\s*".*?"/, fixedBodyFileName);
+    }
+
+    fetch(`/api/edit/${id}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ apiName, apiUrl, apiMappings, apiFiles }),
+    })
+        .then(response => {
+            if (response.ok) {
+                alert("API가 성공적으로 수정되었습니다.");
+                window.location.reload();
+            } else {
+                alert("API 수정 중 문제가 발생했습니다.");
+            }
+        })
+        .catch(error => {
+            console.error("Error updating API:", error);
+            alert("네트워크 오류가 발생했습니다.");
+        });
 };
 
 // API Mappings 입력 시 실시간 검증

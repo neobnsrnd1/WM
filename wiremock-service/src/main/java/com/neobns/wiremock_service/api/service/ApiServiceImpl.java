@@ -1,10 +1,13 @@
 package com.neobns.wiremock_service.api.service;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -176,7 +179,96 @@ public class ApiServiceImpl implements ApiService {
 		if(apiVO == null) {
 			throw new IllegalArgumentException("삭제할 API가 존재하지 않습니다.");
 		}
+		deleteApiFiles(apiVO.getApiName());
 		apiDao.deleteById(id);
+	}
+	
+	@Override
+	public void updateApi(int id, String apiName, String apiUrl, String apiMappings, String apiFiles) {
+		try {
+	        // 1. DB에서 기존 API 조회 및 수정
+	        ApiVO apiVO = apiDao.findById(id);
+	        if (apiVO == null) {
+	            throw new IllegalArgumentException("수정할 API가 존재하지 않습니다.");
+	        }
+	        
+	        String oldApiName = apiVO.getApiName();
+	        
+	        apiVO.setApiName(apiName);
+	        apiVO.setApiUrl(apiUrl);
+	        apiDao.updateApi(apiVO);
+	        
+	        if(!oldApiName.equals(apiName)) {
+	        	deleteApiFiles(oldApiName);
+	        }
+	        
+	        // Mappings JSON 데이터에 {id}, {apiName}를 실제 ID, apiName으로 치환
+	        String processedMappings = apiMappings.replace("{id}", String.valueOf(id))
+	        									.replace("{apiName}", apiName);
+
+	        // 2. 파일 경로 설정
+	        Path mappingsPath = Paths.get("src", "main", "resources", "wiremock", "mappings", apiVO.getApiName() + "-mapping.json");
+	        Path filesPath = Paths.get("src", "main", "resources", "wiremock", "__files", apiVO.getApiName() + "-response.json");
+
+	        // 3. 파일 내용 업데이트
+	        Files.writeString(mappingsPath, processedMappings, StandardCharsets.UTF_8);
+	        Files.writeString(filesPath, apiFiles, StandardCharsets.UTF_8);
+
+	        logger.info("API '{}' updated successfully.", apiName);
+	    } catch (Exception e) {
+	        logger.error("Error while updating API: " + apiName, e);
+	        throw new RuntimeException("Failed to update API: " + apiName, e);
+	    }
+	}
+	
+	// 파일 삭제
+	private void deleteApiFiles(String apiName) {
+		try {
+	        // 기존 파일 경로 설정
+	        Path mappingsPath = Paths.get("src", "main", "resources", "wiremock", "mappings", apiName + "-mapping.json");
+	        Path filesPath = Paths.get("src", "main", "resources", "wiremock", "__files", apiName + "-response.json");
+
+	        // 파일 삭제
+	        Files.deleteIfExists(mappingsPath);
+	        Files.deleteIfExists(filesPath);
+
+	        logger.info("Deleted old API files for '{}'", apiName);
+	    } catch (IOException e) {
+	        logger.error("Failed to delete old API files for '{}'", apiName, e);
+	    }
+		
+	}
+
+	@Override
+	public Map<String, Object> loadApi(int id) {
+		try {
+	        // DB에서 API 정보 가져오기
+	        ApiVO apiVO = apiDao.findById(id);
+	        if (apiVO == null) {
+	            return null;
+	        }
+
+	        // 파일 경로 설정
+	        Path mappingsPath = Paths.get("src", "main", "resources", "wiremock", "mappings", apiVO.getApiName() + "-mapping.json");
+	        Path filesPath = Paths.get("src", "main", "resources", "wiremock", "__files", apiVO.getApiName() + "-response.json");
+
+	        // 파일 읽기
+	        String mappingsContent = Files.exists(mappingsPath) ? Files.readString(mappingsPath, StandardCharsets.UTF_8) : "{}";
+	        String filesContent = Files.exists(filesPath) ? Files.readString(filesPath, StandardCharsets.UTF_8) : "{}";
+
+	        // 응답 데이터 생성
+	        Map<String, Object> response = Map.of(
+	                "apiName", apiVO.getApiName(),
+	                "apiUrl", apiVO.getApiUrl(),
+	                "apiMappings", mappingsContent,
+	                "apiFiles", filesContent
+	        );
+
+	        return response;
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	        return null;
+	    }
 	}
 	
 	//=== FUNCTION ===//
